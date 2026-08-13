@@ -21,6 +21,28 @@ async function cadastrarPessoa(req, res) {
     try {
         const {nome, email, telefone} = req.body;
 
+        if(!nome || !email || !telefone){
+            return res.status(400).json({
+                mensagem: "Nome, E-mail e telefone são obrigatórios."
+            });
+        }
+
+        const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if(!regexEmail.test(email)){
+            return res.status(400).json({
+                mensagem: "E-mail inválido."
+            })
+        }
+
+        const telefonenumeros = telefone.replace(/\D/g, "");
+
+        if (telefonenumeros.length !== 10 && telefonenumeros.length !== 11){
+            return res.status(400).json({
+                mensagem: "Telefone deve ter 10 ou 11 dígitos."
+            })
+        }
+
         const  resultado = await  pool.query(
             `INSERT INTO pessoas (nome, email, telefone)
              VALUES ($1, $2, $3)
@@ -33,6 +55,12 @@ async function cadastrarPessoa(req, res) {
     } catch (erro){
         console.error("Erro ao cadastrar pessoa:", erro);
 
+        if (erro.code === "23505") {
+            return res.status(409).json({
+                mensagem: "E-mail já cadastrado."
+            })
+        }
+
         res.status(500).json({
             mensagem: "Erro ao cadastra pessoa."
         });
@@ -43,6 +71,28 @@ async function atualizarPessoa(req, res) {
     try {
         const id = Number(req.params.id);
         const {nome, email, telefone} = req.body;
+
+        if (!nome || !email || !telefone) {
+            return res.status(400).json({
+                mensagem: "Nome, e-mail e telefone são obrigatório."
+            });
+        }
+
+        const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!regexEmail.test(email)){
+            return res.status(400).json({
+                mensagem: "E-mail inválido."
+            });
+        }
+
+        const telefoneNumeros = telefone.replace(/\D/g, "");
+
+        if (telefoneNumeros.length !== 10 && telefoneNumeros.length !== 11){
+            return res.status(400).json({
+                mensagem: "Telefone deve ter 10 ou 11 dígito."
+            })
+        }
 
         const resultado = await pool.query(
             `UPDATE pessoas
@@ -63,6 +113,12 @@ async function atualizarPessoa(req, res) {
         res.json(resultado.rows[0]);
     } catch (erro) {
         console.error("Erro ao atualizar pessoa", erro);
+
+        if (erro.code === "23505") {
+            return res.status(409).json({
+                mensagem: "E-mail já cadastrado."
+            });
+        }
 
         res.status(500).json({
             mensagem: "Erro ao atualizar pessoa."

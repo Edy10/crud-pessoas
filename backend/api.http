@@ -1,0 +1,63 @@
+### LISTAR PESSOAS
+GET http://localhost:3000/pessoas
+
+
+### TESTAR CAMPOS OBRIGATÓRIOS
+POST http://localhost:3000/pessoas
+Content-Type: application/json
+
+{
+  "nome": "",
+  "email": "",
+  "telefone": ""
+}
+
+### TESTAR E-MAIL INVÁLIDO
+POST http://localhost:3000/pessoas
+Content-Type: application/json
+
+{
+  "nome": "Teste Email",
+  "email": "emailerrado",
+  "telefone": "11999999999"
+}
+
+### TESTAR TELEFONE INVÁLIDO
+POST http://localhost:3000/pessoas
+Content-Type: application/json
+
+{
+  "nome": "Teste Telefone",
+  "email": "teste3@email.com",
+  "telefone": "1234"
+}
+
+### CADASTRAR PESSOA
+POST http://localhost:3000/pessoas
+Content-Type: application/json
+
+{
+  "nome": "Teste Duplicado",
+  "email": "duplicado@email.com",
+  "telefone": "11999999999"
+}
+
+### ATUALIZAR COM E-MAIL INVÁLIDO
+PUT http://localhost:3000/pessoas/1
+Content-Type: application/json
+
+{
+  "nome": "Edivaldo",
+  "email": "emailerrado",
+  "telefone": "11999999999"
+}
+
+### ATUALIZAR COM TELEFONE INVÁLIDO
+PUT http://localhost:3000/pessoas/1
+Content-Type: application/json
+
+{
+  "nome": "Edivaldo",
+  "email": "duplicado@email.com",
+  "telefone": "1199999999"
+}
