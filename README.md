@@ -1,59 +1,34 @@
-# CRUD de Pessoas - React + Node.js
+# CRUD de Pessoas
 
-Projeto full stack de cadastro de pessoas desenvolvido com React no frontend e Node.js com Express no backend.
+Projeto full stack de cadastro de pessoas desenvolvido com React, Node.js e PostgreSQL.
 
 ## Funcionalidades
 
-- Cadastrar pessoas
-- Listar pessoas
-- Editar pessoas
-- Excluir pessoas
-- Buscar por nome, e-mail ou telefone
-- Validar campos obrigatórios
-- Impedir e-mails duplicados
+* Cadastrar pessoas
+* Listar pessoas
+* Editar pessoas
+* Excluir pessoas
+* Buscar pessoas
+* Validar e-mail e telefone
 
 ## Tecnologias
 
 ### Frontend
 
-- React
-- Vite
-- JavaScript
-- CSS
-- Fetch API
+* React
+* Vite
+* JavaScript
+* CSS
 
 ### Backend
 
-- Node.js
-- Express
-- CORS
-- Nodemon
+* Node.js
+* Express
+* PostgreSQL
 
-## Estrutura
-
-```text
-crud-pessoas/
-├── backend/
-└── frontend/
-```
-
-## Como executar
-
-Depois de clonar o projeto:
-
-```bash
-git clone URL_DO_REPOSITORIO
-```
-
-Entre na pasta:
-
-```bash
-cd crud-pessoas
-```
+## Como rodar
 
 ### Backend
-
-Abra um terminal:
 
 ```bash
 cd backend
@@ -61,7 +36,24 @@ npm install
 npm run dev
 ```
 
-O backend ficará disponível em:
+Crie um arquivo `.env`:
+
+```env
+DB_USER=seu_usuario
+DB_HOST=localhost
+DB_NAME=crud_pessoas
+DB_PORT=5432
+```
+
+Execute também o arquivo:
+
+```text
+database.sql
+```
+
+para criar a tabela do banco.
+
+A API roda em:
 
 ```text
 http://localhost:3000
@@ -69,7 +61,7 @@ http://localhost:3000
 
 ### Frontend
 
-Abra outro terminal:
+Em outro terminal:
 
 ```bash
 cd frontend
@@ -77,14 +69,31 @@ npm install
 npm run dev
 ```
 
-O Vite mostrará um endereço parecido com:
+O frontend normalmente roda em:
 
 ```text
 http://localhost:5173
 ```
 
-Abra esse endereço no navegador.
+## API
 
-## Observação
+```text
+GET    /pessoas
+POST   /pessoas
+PUT    /pessoas/:id
+DELETE /pessoas/:id
+```
 
-O frontend e o backend precisam estar rodando ao mesmo tempo para o sistema funcionar corretamente.
+## Estrutura do backend
+
+```text
+controllers/  → lógica
+routes/       → rotas
+validators/   → validações
+middlewares/  → tratamento de erros
+db.js         → conexão com PostgreSQL
+```
+
+## Autor
+
+Edivaldo S. Paixão

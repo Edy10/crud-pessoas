@@ -1,6 +1,7 @@
 const pool = require("../db");
+const { validarPessoas } = require("../validators/pessoaValidator");
 
-async function listarPessoas(req, res) {
+async function listarPessoas(req, res, next) {
     try {
         const resultado = await pool.query(
             "SELECT * FROM pessoas ORDER BY id"
@@ -9,38 +10,20 @@ async function listarPessoas(req, res) {
         res.json(resultado.rows);
 
     }catch (erro) {
-        console.error("Erro ao buscar pessoas:", erro);
-
-        res.status(500).json({
-            mensagem: "Erro ao buscar pessoas."
-        });
+        next(erro);
     }
 }
 
-async function cadastrarPessoa(req, res) {
+async function cadastrarPessoa(req, res, next) {
     try {
         const {nome, email, telefone} = req.body;
 
-        if(!nome || !email || !telefone){
+        const erroValidacao = validarPessoas(nome, email, telefone);
+
+        if (erroValidacao) {
             return res.status(400).json({
-                mensagem: "Nome, E-mail e telefone são obrigatórios."
+                mensagem: erroValidacao
             });
-        }
-
-        const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if(!regexEmail.test(email)){
-            return res.status(400).json({
-                mensagem: "E-mail inválido."
-            })
-        }
-
-        const telefonenumeros = telefone.replace(/\D/g, "");
-
-        if (telefonenumeros.length !== 10 && telefonenumeros.length !== 11){
-            return res.status(400).json({
-                mensagem: "Telefone deve ter 10 ou 11 dígitos."
-            })
         }
 
         const  resultado = await  pool.query(
@@ -53,45 +36,28 @@ async function cadastrarPessoa(req, res) {
         res.status(201).json(resultado.rows[0]);
 
     } catch (erro){
-        console.error("Erro ao cadastrar pessoa:", erro);
-
-        if (erro.code === "23505") {
-            return res.status(409).json({
-                mensagem: "E-mail já cadastrado."
-            })
-        }
-
-        res.status(500).json({
-            mensagem: "Erro ao cadastra pessoa."
-        });
+        next(erro);
     }
 }
 
-async function atualizarPessoa(req, res) {
+async function atualizarPessoa(req, res, next) {
     try {
         const id = Number(req.params.id);
+
+        if (Number.isNaN(id)){
+            return res.status(400).json({
+                mensagem: "ID inválido."
+            })
+        }
+
         const {nome, email, telefone} = req.body;
 
-        if (!nome || !email || !telefone) {
+        const erroValidacao = validarPessoas(nome, email, telefone);
+
+        if (erroValidacao) {
             return res.status(400).json({
-                mensagem: "Nome, e-mail e telefone são obrigatório."
+                mensagem: erroValidacao
             });
-        }
-
-        const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (!regexEmail.test(email)){
-            return res.status(400).json({
-                mensagem: "E-mail inválido."
-            });
-        }
-
-        const telefoneNumeros = telefone.replace(/\D/g, "");
-
-        if (telefoneNumeros.length !== 10 && telefoneNumeros.length !== 11){
-            return res.status(400).json({
-                mensagem: "Telefone deve ter 10 ou 11 dígito."
-            })
         }
 
         const resultado = await pool.query(
@@ -112,23 +78,19 @@ async function atualizarPessoa(req, res) {
 
         res.json(resultado.rows[0]);
     } catch (erro) {
-        console.error("Erro ao atualizar pessoa", erro);
-
-        if (erro.code === "23505") {
-            return res.status(409).json({
-                mensagem: "E-mail já cadastrado."
-            });
-        }
-
-        res.status(500).json({
-            mensagem: "Erro ao atualizar pessoa."
-        })
+        next(erro);
     }
 }
 
-async function excluirPessoa(req, res){
+async function excluirPessoa(req, res, next){
     try {
         const id = Number(req.params.id);
+
+        if (Number.isNaN(id)){
+            return  res.status(400).json({
+                mensagem: "ID inválido."
+            });
+        }
 
         const  resultado = await pool.query(
             `DELETE FROM pessoas
@@ -146,11 +108,7 @@ async function excluirPessoa(req, res){
         res.status(204).send();
 
     } catch (erro) {
-        console.error("Erro ao excluir pessoa", erro);
-
-        res.status(500).json({
-            mensagem: "Erro ao excluir pessoa."
-        });
+        next(erro);
     }
 }
 
